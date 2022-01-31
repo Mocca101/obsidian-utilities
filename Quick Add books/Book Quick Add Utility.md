@@ -2,6 +2,8 @@
 
 A combination of a script and Template to quickly fetch and Add books using [Open Library's](https://openlibrary.org/) API as well as to achieve something like the Movie Gallery from [Kepano](https://github.com/kepano) & [chhoumann](https://github.com/chhoumann) (To achieve this you'll have to use the minimal Theme).
 
+![Book Gallery View.png](/imgs/Book Gallery View.png)
+
 I haven't tested it extensively but I hope most bugs should have been ironed out. Please feel free to open an Issue if you notice anything.
 
 Currently there are 2 ways to Add Books:
@@ -57,3 +59,4 @@ Reviewed Date::
 ```
 
 ### Script
+[book.js](https://github.com/Mocca101/obsidian-utilities/blob/main/Quick%20Add%20books/books.js)
