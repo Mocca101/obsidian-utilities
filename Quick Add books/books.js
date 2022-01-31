@@ -9,11 +9,13 @@ const ISBN_API_URL = "https://openlibrary.org/isbn/";
 const COVER_API_URL = "https://covers.openlibrary.org/b/id/";
 const BOOK_API_URL = "https://openlibrary.org/api/books?";
 const BOOK_URL = "https://openlibrary.org/books/";
-const JUST_TITLE = false;
-const ALL_AUTHORS = false;
 
 
-const COVER_SIZE = "L";
+const JUST_TITLE = "Use just the Book Title as filname (will add author(s) otherwise)";
+const ALL_AUTHORS = "Use all authors (instead of just one) for the filename";
+const COVER_SIZE = "Cover Size";
+const FILENAME_PREFIX = "Filename Prefix";
+
 
 module.exports = {
     entry: start,
@@ -26,6 +28,19 @@ module.exports = {
                 defaultValue: "L",
                 placeholder: "Set to 'L', 'M' or 'S'",
             },
+            [FILENAME_PREFIX]: {
+                type: "text",
+                defaultValue: "",
+                placeholder: "E.g. '📕'",
+            },
+            [JUST_TITLE]: {
+                type: "toggle",
+                defaultValue: false,
+            },
+            [ALL_AUTHORS]: {
+                type: "toggle",
+                defaultValue: false,
+            }
         },
     },
 };
@@ -82,27 +97,48 @@ async function start(params, settings) {
     const authors = mapAuthors(selectedBook.authors);
     const subjects = mapSubjects(selectedBook.subjects);
     const description = await getDesrciption(book.works[0].key, book);
+    const cover = getCover(selectedBook);
 
     QuickAdd.variables = {
         ...selectedBook,
         authorLinks: Array.isArray(authors) ? linkifyList(authors) : authors,
         genreLinks: Array.isArray(subjects) ? linkifyList(subjects) : subjects,
         fileName: generateFilename(selectedBook, authors),
-        coverLink: selectedBook.cover ? selectedBook.cover.large : 'Cover Missing',
+        coverLink: cover,
         description: description,
         isbn: getIsbnFromResult(book),
     };
 }
 
+function getCover(selectedBook) {
+    cover = 'Missing';
+    switch (Settings[COVER_SIZE]) {
+        case 'L':
+            cover = selectedBook.cover ? selectedBook.cover.large : 'Cover Missing';
+            break;
+        case 'M':
+            cover = selectedBook.cover ? selectedBook.cover.medium : 'Cover Missing';
+            break;
+        case 'S':
+            cover = selectedBook.cover ? selectedBook.cover.small : 'Cover Missing';
+            break;
+        default:
+            cover = selectedBook.cover ? selectedBook.cover.large : 'Cover Missing';
+            break;
+    }
+    return cover;
+
+}
+
 function generateFilename(selectedBook, authors) {
     let fn = 'Missing Title';
 
-    if(JUST_TITLE) {
-        fn = `${replaceIllegalFileNameCharactersInString(selectedBook.title)}`
-    } else if (!ALL_AUTHORS) {
-        fn = `${replaceIllegalFileNameCharactersInString(selectedBook.title)} - ${authors[0]}`
+    if(Settings[JUST_TITLE]) {
+        fn = `${Settings[FILENAME_PREFIX]}${replaceIllegalFileNameCharactersInString(selectedBook.title)}`
+    } else if (!Settings[ALL_AUTHORS]) {
+        fn = `${Settings[FILENAME_PREFIX]}${replaceIllegalFileNameCharactersInString(selectedBook.title)} - ${authors[0]}`
     } else {
-        fn = `${replaceIllegalFileNameCharactersInString(selectedBook.title)} - ${authors.join(' - ')}`
+        fn = `${Settings[FILENAME_PREFIX]}${replaceIllegalFileNameCharactersInString(selectedBook.title)} - ${authors.join(' - ')}`
     }
 
     return fn;
