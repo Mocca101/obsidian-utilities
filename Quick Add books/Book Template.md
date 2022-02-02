@@ -12,7 +12,7 @@ Author:: {{VALUE:authorLinks}}
 Subject:: {{VALUE:genreLinks}}
 ISBN:: {{VALUE:isbn}}
 Publish Date:: {{VALUE:publish_date}}
-Pages:: {{VALUE:pagination}}
+Pages:: {{VALUE:number_of_pages}}
 
 DOI::
 Edition::
